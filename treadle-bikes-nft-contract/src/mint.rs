@@ -11,6 +11,8 @@ impl Contract {
         //we add an optional parameter for perpetual royalties
         perpetual_royalties: Option<HashMap<AccountId, u32>>,
     ) {
+        assert_owner(&self);
+
         //measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
 

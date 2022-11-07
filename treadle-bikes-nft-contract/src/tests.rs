@@ -36,6 +36,23 @@ fn sample_token_metadata() -> TokenMetadata {
     }
 }
 
+fn sample_token_metadata2() -> TokenMetadata {
+    TokenMetadata {
+        title: Some("Last OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOne".into()),
+        description: Some("The LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLlast album of Morgenshtern".into()),
+        media: None,
+        media_hash: None,
+        copies: Some(1u64),
+        issued_at: None,
+        expires_at: None,
+        starts_at: None,
+        updated_at: None,
+        extra: None,
+        reference: None,
+        reference_hash: None,
+    }
+}
+
 #[test]
 #[should_panic(expected = "The contract is not initialized")]
 fn test_default() {
@@ -58,15 +75,20 @@ fn test_new_account_contract() {
 fn test_mint_nft() {
     let mut context = get_context(accounts(0));
     testing_env!(context.build());
+    
     let mut contract = Contract::new_default_meta(accounts(0).into());
+    
     testing_env!(context
         .storage_usage(env::storage_usage())
         .attached_deposit(MINT_STORAGE_COST)
         .predecessor_account_id(accounts(0))
         .build());
+    
     let token_metadata: TokenMetadata = sample_token_metadata();
     let token_id = "0".to_string();
+
     contract.nft_mint(token_id.clone(), token_metadata, accounts(0), None);
+    
     let contract_nft_tokens = contract.nft_tokens(Some(U128(0)), None);
     assert_eq!(contract_nft_tokens.len(), 1);
 
@@ -86,6 +108,47 @@ fn test_mint_nft() {
     );
     assert_eq!(contract_nft_tokens[0].approved_account_ids, HashMap::new());
 }
+
+#[test]
+fn test_nft_metadata_edit() {
+    let mut context = get_context(accounts(0));
+    testing_env!(context.build());
+    
+    let mut contract = Contract::new_default_meta(accounts(0).into());
+
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(MINT_STORAGE_COST)
+        .predecessor_account_id(accounts(0))
+        .build());
+    
+    // let token_metadata: TokenMetadata = sample_token_metadata();
+    let token_id = "0".to_string();
+    
+    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+
+    contract.nft_metadata_edit(token_id.clone(), sample_token_metadata2());
+
+    let contract_nft_tokens = contract.nft_tokens(Some(U128(0)), None);
+    assert_eq!(contract_nft_tokens.len(), 1);
+
+    assert_eq!(contract_nft_tokens[0].token_id, token_id);
+    assert_eq!(contract_nft_tokens[0].owner_id, accounts(0));
+    assert_eq!(
+        contract_nft_tokens[0].metadata.title,
+        sample_token_metadata2().title
+    );
+    assert_eq!(
+        contract_nft_tokens[0].metadata.description,
+        sample_token_metadata2().description
+    );
+    assert_eq!(
+        contract_nft_tokens[0].metadata.media,
+        sample_token_metadata2().media
+    );
+    assert_eq!(contract_nft_tokens[0].approved_account_ids, HashMap::new());
+}
+
 
 #[test]
 fn test_internal_transfer() {

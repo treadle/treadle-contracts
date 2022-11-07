@@ -75,3 +75,27 @@ impl NonFungibleTokenMetadata for Contract {
         self.metadata.get().unwrap()
     }
 }
+
+// to-do:
+// emit event when metadata is changed
+#[near_bindgen]
+impl Contract {
+    pub fn nft_metadata_edit(&mut self, token_id: TokenId, metadata: TokenMetadata) {
+        // NFT metadata can be changed only by the owner
+        assert_owner(&self);
+
+        // measure the initial storage being used on the contract
+        let initial_storage_usage = env::storage_usage();
+    
+        self.token_metadata_by_id.insert(&token_id, &metadata);
+
+        // refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
+        if env::storage_usage() > initial_storage_usage {
+            let required_storage_in_bytes = env::storage_usage() - initial_storage_usage;
+            refund_deposit(required_storage_in_bytes);
+        } else {
+            refund_deposit(0);
+        }
+
+    }
+}

@@ -63,11 +63,9 @@ pub enum StorageKey {
 
 #[near_bindgen]
 impl Contract {
-    /*
-        initialization function (can only be called once).
-        this initializes the contract with default metadata so the
-        user doesn't have to manually type metadata.
-    */
+    // initialization function (can only be called once).
+    // this initializes the contract with default metadata so the
+    // user doesn't have to manually type metadata.
     #[init]
     pub fn new_default_meta(owner_id: AccountId) -> Self {
         //calls the other function "new: with some default metadata and the owner_id passed in 
@@ -75,7 +73,7 @@ impl Contract {
             owner_id,
             NFTContractMetadata {
                 spec: "nft-1.0.0".to_string(),
-                name: "NFT Tutorial Contract".to_string(),
+                name: "TREADLE Bikes NFT Contract".to_string(),
                 symbol: "GOTEAM".to_string(),
                 icon: None,
                 base_uri: None,
