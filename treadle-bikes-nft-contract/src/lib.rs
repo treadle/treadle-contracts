@@ -73,8 +73,8 @@ impl Contract {
             owner_id,
             NFTContractMetadata {
                 spec: "nft-1.0.0".to_string(),
-                name: "TREADLE Bikes NFT Contract".to_string(),
-                symbol: "GOTEAM".to_string(),
+                name: "TRDLB".to_string(),
+                symbol: "TRDLB".to_string(),
                 icon: None,
                 base_uri: None,
                 reference: None,
