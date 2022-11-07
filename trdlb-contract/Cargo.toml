@@ -1,5 +1,5 @@
 [package]
-name = "treadle-bikes-nft-contract"
+name = "trdlb-contract"
 version = "0.1.0"
 authors = ["Illia Malovanyi <pantemonnn@gmail.com>"]
 edition = "2021"
