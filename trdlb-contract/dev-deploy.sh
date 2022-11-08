@@ -1,1 +1,0 @@
-near dev-deploy --wasmFile ./dist/trdlb.wasm
