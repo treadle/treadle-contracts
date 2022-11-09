@@ -19,37 +19,36 @@ fn get_context(predecessor: AccountId) -> VMContextBuilder {
     builder
 }
 
-fn sample_token_metadata() -> TokenMetadata {
-    TokenMetadata {
-        title: Some("Olympus Mons".into()),
-        description: Some("The tallest mountain in the charted solar system".into()),
-        media: None,
-        media_hash: None,
-        copies: Some(1u64),
-        issued_at: None,
-        expires_at: None,
-        starts_at: None,
-        updated_at: None,
-        extra: None,
-        reference: None,
-        reference_hash: None,
-    }
-}
-
-fn sample_token_metadata2() -> TokenMetadata {
-    TokenMetadata {
-        title: Some("Last OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOne".into()),
-        description: Some("The LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLlast album of Morgenshtern".into()),
-        media: None,
-        media_hash: None,
-        copies: Some(1u64),
-        issued_at: None,
-        expires_at: None,
-        starts_at: None,
-        updated_at: None,
-        extra: None,
-        reference: None,
-        reference_hash: None,
+fn get_token_metadata(index: u32) -> TokenMetadata {
+    match index {
+        0 => TokenMetadata {
+            title: Some("VC".into()),
+            description: Some("Front-end Developer".into()),
+            media: None,
+            media_hash: None,
+            copies: Some(1u64),
+            issued_at: None,
+            expires_at: None,
+            starts_at: None,
+            updated_at: None,
+            extra: None,
+            reference: None,
+            reference_hash: None,
+        },
+        _ => TokenMetadata {
+            title: Some("IM".into()),
+            description: Some("CEO".into()),
+            media: None,
+            media_hash: None,
+            copies: Some(1u64),
+            issued_at: None,
+            expires_at: None,
+            starts_at: None,
+            updated_at: None,
+            extra: None,
+            reference: None,
+            reference_hash: None,
+        }
     }
 }
 
@@ -84,7 +83,7 @@ fn test_mint_nft() {
         .predecessor_account_id(accounts(0))
         .build());
     
-    let token_metadata: TokenMetadata = sample_token_metadata();
+    let token_metadata: TokenMetadata = get_token_metadata(0);
     let token_id = "0".to_string();
 
     contract.nft_mint(token_id.clone(), token_metadata, accounts(0), None);
@@ -96,17 +95,74 @@ fn test_mint_nft() {
     assert_eq!(contract_nft_tokens[0].owner_id, accounts(0));
     assert_eq!(
         contract_nft_tokens[0].metadata.title,
-        sample_token_metadata().title
+        get_token_metadata(0).title
     );
     assert_eq!(
         contract_nft_tokens[0].metadata.description,
-        sample_token_metadata().description
+        get_token_metadata(0).description
     );
     assert_eq!(
         contract_nft_tokens[0].metadata.media,
-        sample_token_metadata().media
+        get_token_metadata(0).media
     );
     assert_eq!(contract_nft_tokens[0].approved_account_ids, HashMap::new());
+}
+
+
+#[test]
+#[should_panic(expected = "TOKEN NOT FOUND")]
+fn test_nft_metadata_edit_token_not_found() {
+    let mut context = get_context(accounts(0));
+    testing_env!(context.build());
+    
+    let mut contract = Contract::new_default_meta(accounts(0).into());
+
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(MINT_STORAGE_COST)
+        .predecessor_account_id(accounts(0))
+        .build());
+
+    // let token_metadata: TokenMetadata = get_token_metadata(0);
+    let token_id = "0".to_string();
+    
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
+
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(MINT_STORAGE_COST)
+        .predecessor_account_id(accounts(0))
+        .build());
+
+    contract.nft_metadata_edit("1".to_string(), get_token_metadata(1));
+}
+
+#[test]
+#[should_panic(expected = "UNAUTHORIZED")]
+fn test_nft_metadata_edit_unauthorised() {
+    let mut context = get_context(accounts(0));
+    testing_env!(context.build());
+    
+    let mut contract = Contract::new_default_meta(accounts(0).into());
+
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(MINT_STORAGE_COST)
+        .predecessor_account_id(accounts(0))
+        .build());
+
+    // let token_metadata: TokenMetadata = get_token_metadata(0);
+    let token_id = "0".to_string();
+    
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
+
+    testing_env!(context
+        .storage_usage(env::storage_usage())
+        .attached_deposit(MINT_STORAGE_COST)
+        .predecessor_account_id(accounts(1))
+        .build());
+
+    contract.nft_metadata_edit(token_id.clone(), get_token_metadata(1));
 }
 
 #[test]
@@ -121,13 +177,14 @@ fn test_nft_metadata_edit() {
         .attached_deposit(MINT_STORAGE_COST)
         .predecessor_account_id(accounts(0))
         .build());
-    
-    // let token_metadata: TokenMetadata = sample_token_metadata();
+
+    // let token_metadata: TokenMetadata = get_token_metadata(0);
     let token_id = "0".to_string();
     
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
+    
+    contract.nft_metadata_edit(token_id.clone(), get_token_metadata(1));
 
-    contract.nft_metadata_edit(token_id.clone(), sample_token_metadata2());
 
     let contract_nft_tokens = contract.nft_tokens(Some(U128(0)), None);
     assert_eq!(contract_nft_tokens.len(), 1);
@@ -136,15 +193,15 @@ fn test_nft_metadata_edit() {
     assert_eq!(contract_nft_tokens[0].owner_id, accounts(0));
     assert_eq!(
         contract_nft_tokens[0].metadata.title,
-        sample_token_metadata2().title
+        get_token_metadata(1).title
     );
     assert_eq!(
         contract_nft_tokens[0].metadata.description,
-        sample_token_metadata2().description
+        get_token_metadata(1).description
     );
     assert_eq!(
         contract_nft_tokens[0].metadata.media,
-        sample_token_metadata2().media
+        get_token_metadata(1).media
     );
     assert_eq!(contract_nft_tokens[0].approved_account_ids, HashMap::new());
 }
@@ -162,7 +219,7 @@ fn test_internal_transfer() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     testing_env!(context
         .storage_usage(env::storage_usage())
@@ -193,12 +250,12 @@ fn test_internal_transfer() {
     let token = &tokens[0];
     assert_eq!(token.token_id, token_id);
     assert_eq!(token.owner_id, accounts(1));
-    assert_eq!(token.metadata.title, sample_token_metadata().title);
+    assert_eq!(token.metadata.title, get_token_metadata(0).title);
     assert_eq!(
         token.metadata.description,
-        sample_token_metadata().description
+        get_token_metadata(0).description
     );
-    assert_eq!(token.metadata.media, sample_token_metadata().media);
+    assert_eq!(token.metadata.media, get_token_metadata(0).media);
     assert_eq!(token.approved_account_ids, HashMap::new());
 }
 
@@ -214,7 +271,7 @@ fn test_nft_approve() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     testing_env!(context
         .storage_usage(env::storage_usage())
@@ -244,7 +301,7 @@ fn test_nft_revoke() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     // alice approves bob
     testing_env!(context
@@ -282,7 +339,7 @@ fn test_revoke_all() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     // alice approves bob
     testing_env!(context
@@ -320,7 +377,7 @@ fn test_internal_remove_token_from_owner() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     let contract_nft_tokens_before = contract.nft_tokens_for_owner(accounts(0), None, None);
     assert_eq!(contract_nft_tokens_before.len(), 1);
@@ -343,7 +400,7 @@ fn test_nft_payout() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     // alice approves bob
     testing_env!(context
@@ -370,7 +427,7 @@ fn test_nft_total_supply() {
         .predecessor_account_id(accounts(0))
         .build());
     let token_id = "0".to_string();
-    contract.nft_mint(token_id.clone(), sample_token_metadata(), accounts(0), None);
+    contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
 
     let total_supply = contract.nft_total_supply();
     assert_eq!(total_supply, U128(1));
