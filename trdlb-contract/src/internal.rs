@@ -4,7 +4,7 @@ use std::mem::size_of;
 
 // Assert that predecessor_account_id == owner_id, meaning contract called by its owner.
 pub(crate) fn assert_owner(contract: &Contract) {
-    assert!(env::predecessor_account_id() == contract.owner_id, "Unauthorized. This method can be called only by the owner of this contract");
+    assert!(env::predecessor_account_id() == contract.owner_id, "UNAUTHORIZED");
 }
 
 //convert the royalty percentage and amount to pay into a payout (U128)
