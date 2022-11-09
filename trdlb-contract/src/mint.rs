@@ -22,7 +22,7 @@ impl Contract {
         // if perpetual royalties were passed into the function: 
         if let Some(perpetual_royalties) = perpetual_royalties {
             //make sure that the length of the perpetual royalties is below 7 since we won't have enough GAS to pay out that many people
-            assert!(perpetual_royalties.len() < 7, "Cannot add more than 6 perpetual royalty amounts");
+            assert!(perpetual_royalties.len() < 7, "PERPETUAL ROYALTY AMOUNTS EXCEEDED");
 
             //iterate through the perpetual royalties and insert the account and amount in the royalty map
             for (account, amount) in perpetual_royalties {
@@ -45,7 +45,7 @@ impl Contract {
         //insert the token ID and token struct and make sure that the token doesn't exist
         assert!(
             self.tokens_by_id.insert(&token_id, &token).is_none(),
-            "Token already exists"
+            "TOKEN ALREADY EXISTS"
         );
 
         //insert the token ID and metadata
