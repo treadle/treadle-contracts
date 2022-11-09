@@ -1,3 +1,5 @@
+use near_sdk::{env::panic_str };
+
 use crate::*;
 pub type TokenId = String;
 //defines the payout type we'll be returning as a part of the royalty standards.
@@ -84,9 +86,14 @@ impl Contract {
         // NFT metadata can be changed only by the owner
         assert_owner(&self);
 
+        // Panic if token doesn't exist
+        if let None = self.token_metadata_by_id.get(&token_id) {
+            panic_str("TOKEN NOT FOUND");
+        }
+
         // measure the initial storage being used on the contract
         let initial_storage_usage = env::storage_usage();
-    
+
         self.token_metadata_by_id.insert(&token_id, &metadata);
 
         // refund any excess storage if the user attached too much. Panic if they didn't attach enough to cover the required.
