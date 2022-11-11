@@ -3,9 +3,8 @@ This repository contains smart contracts of TREADLE Cycling App
 
 # TRDLB contract
 ## To-Do List:
-- [ ] `nft_mint(received_id: AccountId, token_id: TokenId, token_metadata: TokenMetadata)` // owner only
-- [ ] `nft_metadata_edit(token_id: TokenId, metadata: TokenMetadata)` // owner only 
-- [ ] `nft_burn(token_id: TokenId)` // owner only
+- [X] `nft_mint(received_id: AccountId, token_id: TokenId, metadata: TokenMetadata)` // owner only
+- [X] `nft_metadata_edit(token_id: TokenId, metadata: TokenMetadata)` // owner only 
 
 # Usage
 ## Building TRDLB smart contract
