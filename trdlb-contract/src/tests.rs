@@ -111,7 +111,7 @@ fn test_mint_nft() {
 
 #[test]
 #[should_panic(expected = "TOKEN NOT FOUND")]
-fn test_nft_metadata_edit_token_not_found() {
+fn test_nft_token_metadata_edit_token_not_found() {
     let mut context = get_context(accounts(0));
     testing_env!(context.build());
     
@@ -134,12 +134,12 @@ fn test_nft_metadata_edit_token_not_found() {
         .predecessor_account_id(accounts(0))
         .build());
 
-    contract.nft_metadata_edit("1".to_string(), get_token_metadata(1));
+    contract.nft_token_metadata_edit("1".to_string(), get_token_metadata(1));
 }
 
 #[test]
 #[should_panic(expected = "UNAUTHORIZED")]
-fn test_nft_metadata_edit_unauthorised() {
+fn test_nft_token_metadata_edit_unauthorised() {
     let mut context = get_context(accounts(0));
     testing_env!(context.build());
     
@@ -162,11 +162,11 @@ fn test_nft_metadata_edit_unauthorised() {
         .predecessor_account_id(accounts(1))
         .build());
 
-    contract.nft_metadata_edit(token_id.clone(), get_token_metadata(1));
+    contract.nft_token_metadata_edit(token_id.clone(), get_token_metadata(1));
 }
 
 #[test]
-fn test_nft_metadata_edit() {
+fn test_nft_token_metadata_edit() {
     let mut context = get_context(accounts(0));
     testing_env!(context.build());
     
@@ -183,7 +183,7 @@ fn test_nft_metadata_edit() {
     
     contract.nft_mint(token_id.clone(), get_token_metadata(0), accounts(0), None);
     
-    contract.nft_metadata_edit(token_id.clone(), get_token_metadata(1));
+    contract.nft_token_metadata_edit(token_id.clone(), get_token_metadata(1));
 
 
     let contract_nft_tokens = contract.nft_tokens(Some(U128(0)), None);

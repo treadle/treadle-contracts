@@ -82,7 +82,7 @@ impl NonFungibleTokenMetadata for Contract {
 // emit event when metadata is changed
 #[near_bindgen]
 impl Contract {
-    pub fn nft_metadata_edit(&mut self, token_id: TokenId, metadata: TokenMetadata) {
+    pub fn nft_token_metadata_edit(&mut self, token_id: TokenId, metadata: TokenMetadata) {
         // NFT metadata can be changed only by the owner
         assert_owner(&self);
 
@@ -103,6 +103,5 @@ impl Contract {
         } else {
             refund_deposit(0);
         }
-
     }
 }
