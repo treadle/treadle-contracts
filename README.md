@@ -1,4 +1,4 @@
-# treadle-contracts
+# Treadle Contracts
 This repository contains smart contracts of TREADLE Cycling App
 
 # TRDLB contract
