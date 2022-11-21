@@ -1,5 +1,5 @@
 # Treadle Contracts
-This repository contains smart contracts of TREADLE Cycling App
+This repository contains smart contracts for Treadle Lifestyle App.
 
 # TRDLB contract
 ## To-Do List:
